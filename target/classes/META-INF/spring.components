@@ -1,2 +1,4 @@
 com.luv2code.springdemo.controller.CustomerController=org.springframework.stereotype.Component
+com.luv2code.springdemo.dao.CustomerDAOImpl=org.springframework.stereotype.Component
+com.luv2code.springdemo.entity.Customer=javax.persistence.Entity,javax.persistence.Table
 com.luv2code.testdb.testdb=javax.servlet.annotation.WebServlet
