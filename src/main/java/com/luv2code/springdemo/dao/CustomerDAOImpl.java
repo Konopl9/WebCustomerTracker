@@ -1,6 +1,7 @@
 package com.luv2code.springdemo.dao;
 
 import com.luv2code.springdemo.entity.Customer;
+import com.luv2code.springdemo.util.SortUtils;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,19 +16,37 @@ public class CustomerDAOImpl implements CustomerDAO {
   @Autowired private SessionFactory sessionFactory;
 
   @Override
-  public List<Customer> getCustomers() {
+  public List<Customer> getCustomers(int sortField) {
 
     // get the current hibernate session
     Session currentSession = sessionFactory.getCurrentSession();
 
-    // create query --- sort by the last name
-    Query<Customer> query =
-        currentSession.createQuery("from Customer order by lastName", Customer.class);
+    // determine sort field
+    String theFieldName = null;
+
+    switch (sortField) {
+      case SortUtils.FIRST_NAME:
+        theFieldName = "firstName";
+        break;
+      case SortUtils.LAST_NAME:
+        theFieldName = "lastName";
+        break;
+      case SortUtils.EMAIL:
+        theFieldName = "email";
+        break;
+      default:
+        // if nothing matches the default to sort by lastName
+        theFieldName = "lastName";
+    }
+
+    // create a query
+    String queryString = "from Customer order by " + theFieldName;
+    Query<Customer> theQuery = currentSession.createQuery(queryString, Customer.class);
 
     // execute query and get result list
-    List<Customer> customers = query.getResultList();
+    List<Customer> customers = theQuery.getResultList();
 
-    // return the result
+    // return the results
     return customers;
   }
 

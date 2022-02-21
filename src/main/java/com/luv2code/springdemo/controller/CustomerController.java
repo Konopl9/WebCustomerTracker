@@ -2,6 +2,7 @@ package com.luv2code.springdemo.controller;
 
 import com.luv2code.springdemo.entity.Customer;
 import com.luv2code.springdemo.service.CustomerService;
+import com.luv2code.springdemo.util.SortUtils;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,19 @@ public class CustomerController {
   @Autowired private CustomerService customerService;
 
   @GetMapping("/list")
-  public String listCustomers(Model model) {
+  public String listCustomers(Model model, @RequestParam(required = false) String sort) {
 
     // get customers from the service
-    List<Customer> customers = customerService.getCustomers();
+    List<Customer> customers = null;
+
+    // check for sort field
+    if (sort != null) {
+      int sortField = Integer.parseInt(sort);
+      customers = customerService.getCustomers(sortField);
+    } else {
+      // no sort field provided ... default to sorting by last name
+      customers = customerService.getCustomers(SortUtils.LAST_NAME);
+    }
 
     // add the customers to the model
     model.addAttribute("customers", customers);
@@ -72,8 +82,8 @@ public class CustomerController {
   }
 
   @GetMapping("/search")
-  public String searchCustomers(@RequestParam("theSearchName") String theSearchName,
-      Model theModel) {
+  public String searchCustomers(
+      @RequestParam("theSearchName") String theSearchName, Model theModel) {
     // search customers from the service
     List<Customer> theCustomers = customerService.searchCustomers(theSearchName);
 
